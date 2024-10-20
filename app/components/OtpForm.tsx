@@ -3,10 +3,11 @@ import Notification from './Notification';
 
 interface OtpFormProps {
   onSubmit: (otp: string) => void;
-  error?: string;
+  message: string;
+  type: string;
 }
 
-export default function OtpForm({ onSubmit, error }: OtpFormProps) {
+export default function OtpForm({ onSubmit, message, type }: OtpFormProps) {
   const [otp, setOtp] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -18,7 +19,7 @@ export default function OtpForm({ onSubmit, error }: OtpFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <h2 className="text-2xl font-semibold text-center">Enter OTP</h2>
 
-      {error && <Notification message={error} message_type="error" />}
+      {message && <Notification message={message} message_type={ type } />}
 
       <div>
         <label className="block mb-1">OTP</label>

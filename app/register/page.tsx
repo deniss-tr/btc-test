@@ -1,20 +1,26 @@
 "use client";
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import authService from '../services/authService';
 import OtpForm from '../components/OtpForm';
 import Notification from '../components/Notification';
+import Loader from '../components/Loader';
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [step, setStep] = useState(1); // Step 1: Register, Step 2: OTP Verification
+  const [step, setStep] = useState(1);
   const [notification, setNotification] = useState({ message: '', type: '' });
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setNotification({ message: '', type: '' });
 
     const response = await authService.register(email, password);
+    setLoading(false);
     if (response.success) {
       setStep(2);
     } else {
@@ -23,9 +29,14 @@ export default function RegisterPage() {
   };
 
   const handleOtpSubmit = async (otp: string) => {
+    setLoading(true);
     const response = await authService.verifyOtp(otp);
+    setLoading(false);
     if (response.success) {
       setNotification({ message: 'Registration successful!', type: 'success' });
+      setTimeout(() => {
+        router.push('/');
+      }, 1000);
     } else {
       setNotification({ message: response.message, type: 'error' });
     }
@@ -72,8 +83,9 @@ export default function RegisterPage() {
             </button>
           </form>
         ) : (
-          <OtpForm onSubmit={handleOtpSubmit} error={notification.message} />
+          <OtpForm onSubmit={handleOtpSubmit} message={ notification.message } type={ notification.type } />
         )}
+        <Loader loading={ isLoading } />
       </div>
     </div>
   );

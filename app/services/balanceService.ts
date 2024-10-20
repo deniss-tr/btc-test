@@ -1,15 +1,16 @@
 class BalanceService {
-  async getBalances(): Promise<any> {
+  async getBalances(endpoint: string): Promise<any> {
     try {
-      const response = await fetch('https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1/currencies');
+      const response = await fetch(`https://653fb0ea9e8bd3be29e10cd4.mockapi.io/api/v1${endpoint}`);
       if (!response.ok) {
-        throw new Error('Failed to fetch balances');
+        return { error: 'Failed to fetch balances' }
       }
-      const data = await response.json();
-      return data;
+      const balances = await response.json();
+
+      return { balances };
     } catch (error) {
-      console.error('Error fetching balances:', error);
-      return [];
+      
+      return { error }
     }
   }
 }

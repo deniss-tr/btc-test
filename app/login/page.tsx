@@ -4,9 +4,11 @@ import { useRouter } from 'next/navigation';
 import authService from '../services/authService';
 import OtpForm from '../components/OtpForm';
 import Notification from '../components/Notification';
+import Loader from '../components/Loader';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [isLoading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [step, setStep] = useState(1);
@@ -14,9 +16,11 @@ export default function LoginPage() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     setNotification({ message: '', type: '' });
 
     const response = await authService.login(email, password);
+    setLoading(false);
     if (response.success) {
       setStep(2);
     } else {
@@ -25,7 +29,9 @@ export default function LoginPage() {
   };
 
   const handleOtpSubmit = async (otp: string) => {
+    setLoading(true);
     const response = await authService.verifyOtp(otp);
+    setLoading(false);
     if (response.success) {
       setNotification({ message: 'Login successful!', type: 'success' });
       setTimeout(() => {
@@ -44,7 +50,7 @@ export default function LoginPage() {
             <h2 className="text-2xl font-semibold text-center">Login</h2>
 
             {notification.message && (
-              <Notification message={notification.message} message_type={notification.type as 'error' | 'success'} />
+              <Notification message={notification.message} message_type={ notification.type } />
             )}
 
             <div>
@@ -77,8 +83,9 @@ export default function LoginPage() {
             </button>
           </form>
         ) : (
-          <OtpForm onSubmit={handleOtpSubmit} error={notification.message} />
+          <OtpForm onSubmit={handleOtpSubmit} message={ notification.message } type={ notification.type } />
         )}
+        <Loader loading={ isLoading } />
       </div>
     </div>
   );

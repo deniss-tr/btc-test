@@ -1,6 +1,6 @@
 interface NotificationProps {
   message: string;
-  message_type: 'success' | 'error';
+  message_type: string;
 }
 
 export default function Notification({ message, message_type }: NotificationProps) {
